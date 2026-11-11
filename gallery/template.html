@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEO-Isle · 方寸之境 · small worlds, made in code</title>
+<meta name="description" content="NEO-Isle is an agent skill that builds interactive 3D miniature worlds in glass containers. Turn a running isle, try its looks, copy the brief. 用代码，造一方小世界。">
+<meta property="og:title" content="NEO-Isle · 方寸之境">
+<meta property="og:description" content="Small worlds, made in code. 用代码，造一方小世界。">
+<meta property="og:image" content="{{SITE}}{{POSTER}}">
+<meta name="theme-color" content="#05060b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<!-- Page order follows NEO-Cine's gallery (github.com/neohoy/neo-cine); the look is NEO-Isle's own, taken from the isles' interface. -->
+<style>
+:root{
+  --ground:#05060b; --raised:#0b0d16; --ink:#eef1f8; --soft:#b9c0d0; --dim:#8b93a6;
+  --line:rgba(255,255,255,.12); --line-strong:rgba(255,255,255,.24);
+  --lamp:#ffcf99; --lamp-ink:#2b1b08;
+  --latin:"Jost","Noto Sans SC","PingFang SC","Helvetica Neue",Arial,sans-serif;
+  --cn:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --song:"Noto Serif SC","Songti SC","STSong",serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --gutter:clamp(20px,4vw,56px);
+}
+*{box-sizing:border-box}
+html{background:var(--ground);scroll-behavior:smooth;scrollbar-color:#2a2f42 var(--ground)}
+body{margin:0;color:var(--ink);font:400 17px/1.6 var(--latin);background:var(--ground);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--lamp);color:var(--lamp-ink)}
+:focus-visible{outline:2px solid var(--lamp);outline-offset:3px;border-radius:2px}
+a{color:var(--ink);text-underline-offset:.22em;text-decoration-thickness:1px;text-decoration-color:var(--line-strong)}
+a:hover{text-decoration-color:var(--lamp)}
+[lang=zh]{font-family:var(--cn)}
+button{font:inherit;color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--gutter)}
+.skip{position:absolute;left:-999px}
+.skip:focus{left:16px;top:16px;z-index:50;background:var(--lamp);color:var(--lamp-ink);padding:8px 12px}
+
+/* ---------- first viewport: a running isle ---------- */
+.hero{position:relative;height:100svh;min-height:620px;overflow:hidden;background:#03040a}
+.stage{position:absolute;inset:0}
+.stage img,.stage iframe{position:absolute;left:0;top:0;width:122%;height:100%;border:0;display:block}   /* 比视口宽一截：小岛落在偏右的位置，把左下角让给标题 */
+.stage img{object-fit:cover;transition:opacity 1.2s var(--ease)}
+.stage iframe{opacity:0;transform:scale(1.03);transition:opacity 1.4s var(--ease),transform 2.2s var(--ease)}
+.hero.live .stage iframe{opacity:1;transform:none}
+.hero.live .stage img{opacity:0}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 0% 100%,rgba(5,6,11,.82) 0%,rgba(5,6,11,.34) 34%,transparent 60%),linear-gradient(180deg,rgba(5,6,11,.6) 0%,transparent 16%)}
+
+.top{position:absolute;z-index:3;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px var(--gutter)}
+.brand{display:flex;align-items:baseline;gap:12px;text-decoration:none}
+.brand b{font:400 17px/1 var(--latin);letter-spacing:.14em}
+.brand span{font:400 14px/1 var(--song);letter-spacing:.3em;color:var(--soft)}
+.nav{display:flex;align-items:center;gap:clamp(14px,2.2vw,30px);font:400 14px/1 var(--latin);letter-spacing:.08em}
+.nav a{text-decoration:none;color:var(--soft);padding:6px 0}
+.nav a:hover{color:var(--ink)}
+.nav a span{margin-left:6px;font-size:13px;letter-spacing:.2em}
+.nav .gh{display:inline-flex;align-items:center;gap:8px;color:var(--ink);border:1px solid var(--line-strong);padding:8px 12px;border-radius:999px}
+.nav .gh:hover{border-color:var(--lamp)}
+.nav svg{width:16px;height:16px;fill:currentColor}
+
+.title{position:absolute;z-index:2;left:var(--gutter);bottom:clamp(120px,17vh,170px);max-width:min(560px,86vw);pointer-events:none}
+.title h1{margin:0;font:300 clamp(48px,7.4vw,96px)/.98 var(--latin);letter-spacing:.02em}
+.title .cn{margin:16px 0 0;font:400 clamp(20px,2.4vw,28px)/1 var(--song);letter-spacing:.46em}
+.title .say{margin:22px 0 0;font:400 clamp(16px,1.5vw,19px)/1.5 var(--latin);color:var(--ink)}
+.title .say span{display:block;margin-top:4px;font-size:15px;letter-spacing:.12em;color:var(--soft)}
+.now{position:absolute;z-index:2;right:var(--gutter);top:86px;text-align:right;pointer-events:none}
+.now b{display:block;font:400 22px/1.2 var(--song);letter-spacing:.3em;margin-right:-.3em}
+.now span{display:block;margin-top:8px;font:400 13px/1 var(--latin);letter-spacing:.2em;color:var(--soft);text-transform:uppercase}
+.now em{display:block;margin-top:12px;font:400 12.5px/1.4 var(--latin);font-style:normal;letter-spacing:.06em;color:var(--dim);transition:opacity .4s}
+.hero.live .now em{opacity:0}
+
+/* the dock: changes the running isle */
+.dock{position:absolute;z-index:3;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:stretch;gap:0;
+  max-width:calc(100vw - 2 * var(--gutter));background:rgba(9,11,20,.62);border:1px solid var(--line);border-radius:18px;
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);overflow-x:auto;scrollbar-width:none}
+.dock::-webkit-scrollbar{display:none}
+.dock fieldset{margin:0;padding:10px 14px 11px;border:0;border-left:1px solid var(--line);min-width:0;flex:none}
+.dock fieldset:first-child{border-left:0}
+.dock legend{float:left;width:100%;padding:0 2px 7px;font:400 11.5px/1 var(--latin);letter-spacing:.16em;color:var(--dim);text-transform:uppercase;white-space:nowrap}
+.dock legend span{margin-left:6px;letter-spacing:.24em}
+.seg{clear:both;display:flex;gap:2px}
+.seg button{all:unset;cursor:pointer;display:grid;place-items:center;min-width:38px;height:32px;padding:0 9px;border-radius:9px;
+  font:400 13.5px/1 var(--cn);letter-spacing:.06em;color:var(--soft);white-space:nowrap;transition:background .25s var(--ease),color .25s var(--ease)}
+.seg button:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+.seg button[aria-pressed=true]{background:var(--lamp);color:var(--lamp-ink)}
+.seg button:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+.seg svg{width:11px;height:11px;fill:currentColor}
+.run{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);display:none;align-items:center;gap:10px;cursor:pointer;
+  padding:13px 20px;border-radius:999px;border:1px solid var(--line-strong);background:rgba(9,11,20,.7);font:400 15px/1 var(--latin);letter-spacing:.08em;white-space:nowrap}
+.run svg{width:12px;height:12px;fill:var(--lamp)}
+.hero.still .run{display:inline-flex}
+.hero.still .dock{display:none}
+
+/* ---------- sections ---------- */
+section{padding:clamp(88px,11vw,150px) 0 0}
+h2{margin:0;font:300 clamp(34px,4.4vw,56px)/1.05 var(--latin);letter-spacing:.01em;text-wrap:balance}
+h2 span{margin-left:.5em;font:400 clamp(19px,2.46vw,31px)/1 var(--song);letter-spacing:.4em;color:var(--soft)}   /* 和原来按标题字号 0.56 倍算出来的大小一样，只是写成了明确的像素范围 */
+.lede{margin:20px 0 0;max-width:62ch;color:var(--ink)}
+.lede + .lede{margin-top:6px;max-width:36em;color:var(--soft);font-size:15.5px;line-height:1.8}
+
+/* isles: wide plates, newest first */
+.isle{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,64px);align-items:start;margin-top:clamp(48px,6vw,84px)}
+.isle.flip .isle-view{order:2}
+.isle-view{position:relative}
+.isle-img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:var(--raised);border-radius:4px;transition:opacity .35s}
+.hours{display:flex;gap:2px;margin-top:10px}
+.hours button{all:unset;cursor:pointer;flex:1;display:flex;align-items:baseline;justify-content:center;gap:8px;padding:10px 6px;border-top:1px solid var(--line);
+  color:var(--dim);font:400 12.5px/1 var(--latin);letter-spacing:.14em;text-transform:uppercase;transition:color .25s,border-color .25s}
+.hours button b{font:400 15px/1 var(--song);letter-spacing:0;color:var(--soft)}
+.hours button:hover{color:var(--ink);border-color:var(--line-strong)}
+.hours button[aria-pressed=true]{color:var(--lamp);border-color:var(--lamp)}
+.hours button[aria-pressed=true] b{color:var(--lamp)}
+.hours button:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+.isle-text{padding-top:6px}
+.isle h3{margin:0;font:400 clamp(30px,3.4vw,44px)/1.15 var(--song);letter-spacing:.14em}
+.isle h3 i{display:block;margin-top:14px;font:300 clamp(18px,1.7vw,22px)/1.2 var(--latin);font-style:normal;letter-spacing:.04em;color:var(--soft)}
+.isle h3 i span{font:400 .86em/1 var(--song);letter-spacing:.2em}
+.line{margin:26px 0 0;max-width:46ch}
+.line-cn{margin:8px 0 0;max-width:30em;font-size:15px;line-height:1.85;color:var(--soft)}
+.wonder{margin:22px 0 0;padding-top:18px;border-top:1px solid var(--line);font-size:15.5px;color:var(--lamp)}
+.wonder span{display:block}
+.wonder span + span{margin-top:4px;font-size:14.5px;color:var(--soft)}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:12px 26px;margin-top:30px;font:400 14.5px/1 var(--latin);letter-spacing:.06em}
+.acts span{margin-left:6px;font-size:13.5px;letter-spacing:.14em;color:var(--soft)}
+.acts a{text-decoration:none;border-bottom:1px solid var(--line-strong);padding-bottom:6px}
+.acts a:hover{border-color:var(--lamp)}
+.enter{cursor:pointer;background:var(--lamp);color:var(--lamp-ink);border:0;border-radius:999px;padding:13px 20px;letter-spacing:.06em;transition:transform .3s var(--ease),background .3s}
+.enter span{color:var(--lamp-ink)}
+.enter:hover{transform:translateY(-2px);background:#ffdcb3}
+
+/* looks: a table of the same isle */
+.looks{width:100%;margin-top:clamp(40px,5vw,64px);border-collapse:separate;border-spacing:10px;table-layout:fixed}
+.looks td:first-child,.looks th[scope=row]{width:92px}
+.looks th{font:400 13px/1.3 var(--latin);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:left;vertical-align:bottom;padding:0 0 4px}
+.looks th[scope=row]{vertical-align:middle}
+.looks th span{display:block;margin-bottom:6px;font:400 17px/1 var(--song);letter-spacing:.2em;color:var(--ink);text-transform:none}
+.look{all:unset;cursor:pointer;display:block;position:relative;border-radius:4px;overflow:hidden;background:var(--raised)}
+.look img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;transition:transform .9s var(--ease)}
+.look:hover img{transform:scale(1.04)}
+.look[aria-pressed=true]{box-shadow:0 0 0 2px var(--lamp)}
+.look:focus-visible{outline:2px solid var(--lamp);outline-offset:3px}
+.note{margin:22px 0 0;max-width:62ch;font-size:15px;color:var(--soft)}
+
+/* the brief */
+.brief{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(28px,5vw,72px);margin-top:clamp(40px,5vw,64px);align-items:start}
+.sheet{position:relative;border:1px solid var(--line);border-radius:6px;background:var(--raised)}
+.sheet-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:2px}
+.tabs button,.copy{all:unset;cursor:pointer;padding:8px 12px;border-radius:8px;font:400 13.5px/1 var(--latin);letter-spacing:.08em;color:var(--soft)}
+.tabs button[aria-selected=true]{background:rgba(255,255,255,.08);color:var(--ink)}
+.tabs button:focus-visible,.copy:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+.copy{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong)}
+.copy:hover{border-color:var(--lamp);color:var(--ink)}
+.copy svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6}
+.sheet pre{margin:0;padding:22px 22px 26px;white-space:pre-wrap;word-break:break-word;font:400 15.5px/2.05 var(--cn);color:var(--ink)}
+.sheet pre[hidden]{display:none}
+.sheet pre mark{background:rgba(255,207,153,.13);color:var(--lamp);padding:3px 7px;border-radius:5px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.layers{margin:0;padding:0;list-style:none}
+.layers li{padding:20px 0;border-top:1px solid var(--line)}
+.layers li:last-child{border-bottom:1px solid var(--line)}
+.layers h3{margin:0;font:400 19px/1.3 var(--latin);letter-spacing:.02em}
+.layers h3 span{margin-left:10px;font:400 16px/1 var(--song);letter-spacing:.24em;color:var(--soft)}
+.layers p{margin:8px 0 0;font-size:15.5px;color:var(--soft);max-width:44ch}
+.layers p + p{margin-top:2px;font-size:14.5px;line-height:1.8}
+
+/* use */
+.use{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,5vw,72px);margin-top:clamp(40px,5vw,64px)}
+.use h3{margin:0 0 14px;font:400 19px/1.3 var(--latin)}
+.use h3 span{margin-left:10px;font:400 16px/1 var(--song);letter-spacing:.24em;color:var(--soft)}
+.cmd{position:relative;margin:0 0 10px;border:1px solid var(--line);border-radius:6px;background:var(--raised)}
+.cmd code{display:block;padding:15px 56px 15px 16px;font:400 14px/1.6 ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.cmd .copy{position:absolute;right:8px;top:8px;padding:7px 8px}
+.use p{margin:14px 0 0;font-size:15.5px;color:var(--soft);max-width:52ch}
+.say-it{margin:0 0 12px;padding:16px 18px;border-left:1px solid var(--lamp);font-size:16px;color:var(--ink)}
+.say-it span{display:block;margin-top:6px;font-size:15px;line-height:1.8;color:var(--soft)}
+
+footer{margin-top:clamp(96px,12vw,160px);padding:56px 0 64px;border-top:1px solid var(--line)}
+.close{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:28px}
+.close p{margin:0}
+.pair{font:300 clamp(24px,3vw,36px)/1.25 var(--latin);max-width:20ch;text-wrap:balance}
+.pair span{display:block;margin-top:12px;font:400 16px/1.6 var(--song);letter-spacing:.2em;color:var(--soft)}
+.fine{font-size:14.5px;line-height:1.9;color:var(--soft);text-align:right}
+.fine a{color:var(--ink)}
+
+@media (max-width:860px){
+  .nav a:not(.gh){display:none}
+  .stage img,.stage iframe{width:100%}
+  .title{bottom:auto;top:76px;max-width:none;right:var(--gutter)}
+  .title h1{font-size:44px}
+  .title .say{display:none}
+  .now{top:auto;bottom:118px;left:var(--gutter);right:auto;text-align:left}
+  .hero::after{background:linear-gradient(180deg,rgba(5,6,11,.78) 0%,transparent 34%,transparent 62%,rgba(5,6,11,.7) 100%)}
+  .dock{left:var(--gutter);right:var(--gutter);transform:none;max-width:none;bottom:16px}
+  .isle,.brief,.use{grid-template-columns:minmax(0,1fr)}
+  .isle.flip .isle-view{order:0}
+  .looks{border-spacing:5px}
+  .looks td:first-child,.looks th[scope=row]{width:44px}
+  .looks th{font-size:0;letter-spacing:0}
+  .looks th span{font-size:14px;letter-spacing:.06em;margin:0}
+  .looks th[scope=row] span{writing-mode:vertical-rl}
+  .fine{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#isles">Skip to the isles</a>
+
+<header class="hero" id="top">
+  <div class="stage">
+    <img id="poster" src="{{POSTER}}" alt="An isle: a small world inside a glass container, floating in deep space" width="1600" height="1000">
+    <iframe id="live" title="A running isle. Drag to turn it, scroll to zoom." allow="fullscreen" loading="eager"></iframe>
+  </div>
+
+  <div class="top">
+    <a class="brand" href="#top"><b>NEO-Isle</b><span lang="zh">方寸之境</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#isles">Isles<span lang="zh">境</span></a>
+      <a href="#looks">Looks<span lang="zh">外观</span></a>
+      <a href="#brief">Brief<span lang="zh">境帖</span></a>
+      <a href="#use">Use<span lang="zh">用法</span></a>
+      <a class="gh" href="https://github.com/{{REPO}}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.33.66.07-.52.28-.87.5-1.07-1.77-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg>GitHub</a>
+    </nav>
+  </div>
+
+  <div class="title">
+    <h1>NEO-Isle</h1>
+    <p class="cn" lang="zh">方寸之境</p>
+    <p class="say">Small worlds, made in code. Each isle is one world in a glass container: turn it, and watch its day pass.<span lang="zh">用代码，造一方小世界。</span></p>
+  </div>
+  <p class="now" aria-live="polite"><b id="now-cn" lang="zh"></b><span id="now-en"></span><em id="now-state">Drag to turn · 拖拽旋转</em></p>
+
+  <button class="run" id="run" type="button"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>Run this isle <span lang="zh">运行这一境</span></button>
+
+  <form class="dock" id="dock" aria-label="Change the running isle">
+    <fieldset data-key="isle"><legend>Isle<span lang="zh">境</span></legend><div class="seg" id="seg-isle"></div></fieldset>
+    <fieldset data-key="container"><legend>Container<span lang="zh">容器</span></legend><div class="seg">
+      <button type="button" data-v="cube" aria-pressed="true" title="Cube">立方体</button><button type="button" data-v="dome" aria-pressed="false" title="Dome">钟罩</button><button type="button" data-v="sphere" aria-pressed="false" title="Sphere">球</button></div></fieldset>
+    <fieldset data-key="backdrop"><legend>Backdrop<span lang="zh">背景</span></legend><div class="seg">
+      <button type="button" data-v="space" aria-pressed="true" title="Deep space">深空</button><button type="button" data-v="desk" aria-pressed="false" title="Desk">桌面</button><button type="button" data-v="plain" aria-pressed="false" title="Plain colour">纯色</button></div></fieldset>
+    <fieldset data-key="glow"><legend>Glow<span lang="zh">光效</span></legend><div class="seg">
+      <button type="button" data-v="soft" aria-pressed="false" title="Soft">柔和</button><button type="button" data-v="normal" aria-pressed="true" title="Normal">适中</button><button type="button" data-v="strong" aria-pressed="false" title="Strong">强烈</button></div></fieldset>
+    <fieldset data-key="hour"><legend>Hour<span lang="zh">时辰</span></legend><div class="seg">
+      <button type="button" data-v="flow" aria-pressed="true" title="Let the day run" aria-label="Let the day run 流转"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg></button><button type="button" data-v="7" aria-pressed="false" title="Dawn">晨</button><button type="button" data-v="12.5" aria-pressed="false" title="Noon">午</button><button type="button" data-v="17.6" aria-pressed="false" title="Dusk">昏</button><button type="button" data-v="22.5" aria-pressed="false" title="Night">夜</button></div></fieldset>
+  </form>
+</header>
+
+<main>
+<section id="isles"><div class="wrap">
+  <h2>Isles<span lang="zh">境</span></h2>
+  <p class="lede">Each isle is designed from its own brief and written as one world file. The engine supplies the glass, the day and night, the lens, the mist and the soil cross-section; everything inside is made fresh.</p>
+  <p class="lede" lang="zh">每一境都从自己的境帖出发，写成一个世界文件。玻璃、昼夜、镜头、薄雾和土层剖面由引擎负责，里面的东西每一境重新做。</p>
+  {{PLATES}}
+</div></section>
+
+<section id="looks"><div class="wrap">
+  <h2>Looks<span lang="zh">外观</span></h2>
+  <p class="lede">One isle, nine looks: three containers by three backdrops. Pick a cell and the isle at the top of this page is rebuilt that way.</p>
+  <p class="lede" lang="zh">同一境，九种外观：三种容器乘三种背景。点任意一格，页面顶上那一境就按它重新搭一遍。</p>
+  {{LOOKS}}
+  <p class="note">Glow has three levels as well, on the dock above. A look outside these presets is a fork of the engine, kept in your own folder.<br><span lang="zh">光效另有三档，在顶上的控制条里。预设之外的外观，是把引擎复制到你自己的目录里改。</span></p>
+</div></section>
+
+<section id="brief"><div class="wrap">
+  <h2>The brief<span lang="zh">境帖</span></h2>
+  <p class="lede">Fill in the marked slots and hand it to your agent. Leave out what you do not care about; the agent fills the gaps and reads the plan back before it starts.</p>
+  <p class="lede" lang="zh">把标出来的空填上，交给你的代理。不在意的槽位直接删掉，代理会补上，并在开工前把方案复述给你确认。</p>
+  <div class="brief">
+    <div class="sheet">
+      <div class="sheet-bar">
+        <div class="tabs" role="tablist" aria-label="Language of the brief">
+          <button type="button" role="tab" aria-selected="true" aria-controls="brief-zh" id="tab-zh" lang="zh">中文</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="brief-en" id="tab-en">English</button>
+        </div>
+        <button type="button" class="copy" data-copy="brief"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5"/></svg><span>Copy</span></button>
+      </div>
+      <pre id="brief-zh" role="tabpanel" aria-labelledby="tab-zh" lang="zh">{{BRIEF}}</pre>
+      <pre id="brief-en" role="tabpanel" aria-labelledby="tab-en" hidden>{{BRIEFEN}}</pre>
+    </div>
+    <ul class="layers">
+      <li><h3>What is in it<span lang="zh">内容</span></h3><p>Landform, water, plants or buildings, creatures, a trace of people, weather, one wonder, palette, best hour. Write anything.</p><p lang="zh">地貌、水、植被或建筑、生灵、人迹、天气、一奇、色调、最美时辰。随便写。</p></li>
+      <li><h3>How it looks<span lang="zh">外观</span></h3><p>Container, backdrop, glow, and your own series title. Chosen from presets, each one checked in renders.</p><p lang="zh">容器、背景、光效，还有你自己的系列名。从预设里选，每一种都出图验证过。</p></li>
+      <li><h3>A style of your own<span lang="zh">自成一格</span></h3><p>Anything beyond the presets: the agent copies the engine into your series folder and changes it there.</p><p lang="zh">预设之外的一切：代理把引擎复制到你的系列目录里改，成为你自己的一套。</p></li>
+    </ul>
+  </div>
+</div></section>
+
+<section id="use"><div class="wrap">
+  <h2>Use it<span lang="zh">用法</span></h2>
+  <p class="lede">NEO-Isle is a skill for coding agents, built and tuned with Claude Code. It needs Python 3 and Google Chrome; an isle loads three.js from a public CDN when it runs.</p>
+  <p class="lede" lang="zh">NEO-Isle 是给编程代理用的技能，用 Claude Code 做出来、调出来的。需要 Python 3 和 Google Chrome；每一境运行时从公共网络加载 three.js。</p>
+  <div class="use">
+    <div>
+      <h3>Install<span lang="zh">安装</span></h3>
+      <div class="cmd"><code id="cmd-1">npx skills add {{REPO}} -g -a claude-code</code><button type="button" class="copy" data-copy="cmd-1" aria-label="Copy the command"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5"/></svg></button></div>
+      <div class="cmd"><code id="cmd-2">git clone https://github.com/{{REPO}} ~/.claude/skills/neo-isle</code><button type="button" class="copy" data-copy="cmd-2" aria-label="Copy the command"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5"/></svg></button></div>
+      <p>Either one. Every isle you make is yours: no watermark, no credit line.<br><span lang="zh">两种任选其一。你做出来的每一境都归你，不加水印和署名。</span></p>
+    </div>
+    <div>
+      <h3>Then say<span lang="zh">然后直接说</span></h3>
+      <p class="say-it">Make an isle: a miniature harbour city at dusk, in a glass dome on a desk.<span lang="zh">做一境：黄昏的微缩港口城市，装在玻璃钟罩里，放在桌面上。</span></p>
+      <p class="say-it">Make the next isle. Give me three subjects to choose from first.<span lang="zh">做下一境，先给我三个题材挑。</span></p>
+      <p>It asks once, about what only you can decide, then plans, builds, checks renders at four hours of the day, and hands over a versioned page with a cover.<br><span lang="zh">它只问一轮你才能定的事，然后写方案、造境、在四个时辰出图检查，交付带版本号的网页和封面。</span></p>
+    </div>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap close">
+  <p class="pair">NEO-Cine makes films. NEO-Isle makes worlds.<span lang="zh">一个做影像，一个造世界</span></p>
+  <p class="fine"><a href="https://github.com/{{REPO}}">github.com/{{REPO}}</a> · <a href="https://neohoy.github.io/neo-cine/">NEO-Cine</a><br>{{COUNT}} isles so far, one at a time.<br><span lang="zh">NEO造物集 · by neohoy</span></p>
+</div></footer>
+
+<script>
+const DATA = {{DATA}};
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const hero = $('.hero'), live = $('#live'), poster = $('#poster');
+const state = { isle: DATA.start, container: 'cube', backdrop: 'space', glow: 'normal', hour: 'flow' };
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// 境的按钮
+$('#seg-isle').innerHTML = DATA.isles.map(i => `<button type="button" data-v="${i.slug}" aria-pressed="${i.slug === state.isle}" title="${i.en}">${i.num}</button>`).join('');
+
+const isleOf = slug => DATA.isles.find(i => i.slug === slug);
+function label(){
+  const i = isleOf(state.isle);
+  $('#now-cn').textContent = i.cn; $('#now-en').textContent = `Isle ${i.num} · ${i.en}`;
+}
+function press(){
+  for (const fs of $$('#dock fieldset')) for (const b of fs.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.v === String(state[fs.dataset.key])));
+  for (const b of $$('.look')) b.setAttribute('aria-pressed', String(b.dataset.container === state.container && b.dataset.backdrop === state.backdrop));
+}
+let token = 0;
+function load(){
+  const i = isleOf(state.isle), my = ++token;
+  const q = new URLSearchParams({ ui: 0, intro: 0, dist: 1.12, container: state.container, backdrop: state.backdrop, glow: state.glow });
+  if (state.hour === 'flow') q.set('hour', i.hour); else { q.set('hour', state.hour); q.set('pause', 1); }
+  if (still) q.set('rot', 0);
+  hero.classList.remove('live');
+  $('#now-state').textContent = 'Building the isle · 正在造境';
+  live.src = `isles/${i.slug}/index.html?${q}`;
+  const t0 = Date.now();
+  const tick = () => {
+    if (my !== token) return;
+    let ready = false;
+    try { ready = live.contentDocument && live.contentDocument.documentElement.dataset.ready === '1'; } catch (e) { ready = Date.now() - t0 > 4500; }   // 跨源时读不到页面，按时间估
+    if (ready || Date.now() - t0 > 15000){ hero.classList.add('live'); $('#now-state').textContent = 'Drag to turn · 拖拽旋转'; }
+    else setTimeout(tick, 200);
+  };
+  setTimeout(tick, 400);
+  label(); press();
+}
+function setHour(v){
+  state.hour = v; press();
+  try {                                  // 同源时直接改正在跑的那一境，不用重建
+    const f = live.contentWindow.__fangcun;
+    if (v === 'flow') f.state.playing = true; else { f.state.hour = parseFloat(v); f.state.playing = false; }
+  } catch (e) { load(); }
+}
+$('#dock').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const key = b.closest('fieldset').dataset.key;
+  if (key === 'hour') return setHour(b.dataset.v);
+  if (state[key] === b.dataset.v) return;
+  state[key] = b.dataset.v; if (key === 'isle') state.hour = 'flow';
+  load();
+});
+$('#dock').addEventListener('submit', e => e.preventDefault());
+
+function start(){ hero.classList.remove('still'); load(); }
+$('#run').addEventListener('click', start);
+// 小屏或省流量时先放一张图，点了再跑
+if (matchMedia('(min-width: 720px)').matches && !(navigator.connection && navigator.connection.saveData)) start();
+else { hero.classList.add('still'); label(); $('#now-state').textContent = ''; }
+
+// 各境：时辰条换图；“走进去”把它放到顶上跑起来
+for (const view of $$('.isle-view')){
+  const img = view.querySelector('.isle-img');
+  view.querySelector('.hours').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const on = b.getAttribute('aria-pressed') === 'true';
+    for (const x of view.querySelectorAll('.hours button')) x.setAttribute('aria-pressed', 'false');
+    b.setAttribute('aria-pressed', String(!on));
+    const src = on ? img.dataset.cover : b.dataset.img;
+    img.style.opacity = .4; const pre = new Image(); pre.onload = () => { img.src = src; img.style.opacity = 1; }; pre.src = src;
+  });
+}
+for (const b of $$('.enter')) b.addEventListener('click', () => { state.isle = b.dataset.isle; state.hour = 'flow'; start(); $('#top').scrollIntoView({ behavior: still ? 'auto' : 'smooth' }); });
+for (const b of $$('.look')) b.addEventListener('click', () => { state.container = b.dataset.container; state.backdrop = b.dataset.backdrop; start(); $('#top').scrollIntoView({ behavior: still ? 'auto' : 'smooth' }); });
+
+// 境帖：把花括号里的槽位标出来；切换语言；复制
+for (const pre of $$('.sheet pre')) pre.innerHTML = pre.innerHTML.replace(/\{\{(.+?)\}\}/g, '<mark>$1</mark>');
+const raw = { 'brief-zh': null, 'brief-en': null };
+for (const pre of $$('.sheet pre')) raw[pre.id] = pre.textContent.replace(/​/g, '');
+for (const t of $$('.tabs button')) t.addEventListener('click', () => {
+  for (const x of $$('.tabs button')){ const on = x === t; x.setAttribute('aria-selected', String(on)); $('#' + x.getAttribute('aria-controls')).hidden = !on; }
+});
+for (const c of $$('.copy')) c.addEventListener('click', async () => {
+  let text;
+  if (c.dataset.copy === 'brief'){ const pre = $('.sheet pre:not([hidden])'); text = [...pre.childNodes].map(n => n.nodeName === 'MARK' ? `{{${n.textContent}}}` : n.textContent).join(''); }
+  else text = $('#' + c.dataset.copy).textContent;
+  try { await navigator.clipboard.writeText(text); } catch (e) { const ta = document.createElement('textarea'); ta.value = text; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  const s = c.querySelector('span'); if (s){ const old = s.textContent; s.textContent = 'Copied · 已复制'; setTimeout(() => s.textContent = old, 1600); } else { c.style.color = 'var(--lamp)'; setTimeout(() => c.style.color = '', 1200); }
+});
+</script>
+</body>
+</html>

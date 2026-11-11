@@ -1,0 +1,32 @@
+{
+  "repo": "neohoy/neo-isle",
+  "site": "https://neohoy.github.io/neo-isle/",
+  "look_isle": "02-snowfall-peak",
+  "look_hour": 17.4,
+  "isles": [
+    {
+      "slug": "01-snow-valley", "num": "01", "source": "examples/01-雪山河谷",
+      "cn": "雪山河谷", "en": "Snow Valley",
+      "line_cn": "雪线化水，在高台上绕两个弯，越过断崖成瀑布，再绕过草甸流进湖里。鹿在河边低头吃草，入夜木屋亮起一扇窗。",
+      "line": "Meltwater leaves the snowline, winds across a plateau, drops over a cliff as a waterfall and reaches a lake. Deer graze by the river; at night one cabin window comes on.",
+      "wonder_cn": "这一境没有设奇事。", "wonder": "This isle has no wonder set.",
+      "cover_hour": 17.6, "best_hour": 7.2, "date": "2026-11-09"
+    },
+    {
+      "slug": "02-snowfall-peak", "num": "02", "source": "examples/02-雪落寒山",
+      "cn": "雪落寒山", "en": "Snowfall Peak",
+      "line_cn": "隆冬大雪。一座孤峰压在云底下，湖冻成一面镜子，岩阶上挂着冰瀑；牦牛排成一行走过雪原，石屋旁的经幡在风里抖。",
+      "line": "Deep winter, snow all day. A lone peak under low cloud, a lake frozen to a mirror, an icefall on the rock step; yaks cross the snowfield in single file and prayer flags shake beside a stone hut.",
+      "wonder_cn": "一奇：入夜后，冻住的湖面下有发光的鱼在游。", "wonder": "The wonder: after dark, glowing fish swim under the frozen lake.",
+      "cover_hour": 21.6, "best_hour": 17.2, "date": "2026-11-11"
+    }
+  ],
+  "readme_shots": [
+    { "name": "feat-cube", "isle": "01-snow-valley", "hour": 9.5, "extra": "" },
+    { "name": "feat-dome", "isle": "01-snow-valley", "hour": 9.5, "extra": "container=dome&backdrop=desk" },
+    { "name": "feat-sphere", "isle": "02-snowfall-peak", "hour": 21.6, "extra": "container=sphere&backdrop=desk" },
+    { "name": "feat-section", "isle": "01-snow-valley", "hour": 16.5, "extra": "tx=2.6&ty=-2.6&tz=3.0&dist=0.42&az=0.75&pol=1.32&tilt=0" },
+    { "name": "feat-life", "isle": "02-snowfall-peak", "hour": 15, "extra": "tx=-1.7&ty=-1.95&tz=2.0&dist=0.26&az=1.2&pol=1.3&tilt=0" },
+    { "name": "feat-wonder", "isle": "02-snowfall-peak", "hour": 21.5, "extra": "tx=2.0&ty=-2.0&tz=1.9&dist=0.36&az=0.6&pol=1.05" }
+  ]
+}

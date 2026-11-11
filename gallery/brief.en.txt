@@ -1,0 +1,14 @@
+NEO-Isle · {{name of the isle}}:
+{{landform: what is highest, what is lowest}};
+{{water: river / lake / sea / spring / ice, or what stands in for it}};
+{{one main plant, or one main kind of building}};
+{{the lead}} is {{doing what}}, with {{one or two others}};
+{{one trace of people: a small building or object}};
+{{weather and air: mist, cloud, rain or snow, wind}};
+the wonder: {{one impossible, quiet thing}};
+palette {{three or four main colours}}, accent {{one}};
+at its best at {{daybreak / morning / noon / dusk / night}}.
+
+Container: {{glass cube / glass dome / glass sphere}}
+Backdrop: {{deep space / desk / plain colour}}
+Glow: {{normal / soft / strong}}

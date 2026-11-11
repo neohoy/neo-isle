@@ -1,0 +1,4 @@
+interface:
+  display_name: "NEO-Isle 方寸之境"
+  short_description: "做玻璃容器里的微缩世界：可交互 3D 网页，内容自由写，容器和背景可选"
+  default_prompt: "使用 $neo-isle 做方寸之境的下一境，先把境帖发给我填。"
