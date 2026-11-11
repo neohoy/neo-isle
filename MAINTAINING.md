@@ -55,6 +55,16 @@ python3 gallery/build.py --shots   # 另外把全部预览图重出一遍（约�
 - 两份 README 里 `<!-- isles:start -->` 到 `<!-- isles:end -->` 之间的表格是脚本生成的，不要手改。
 - 本地看：`cd docs && python3 -m http.server`，然后打开 `http://localhost:8000/`。直接双击 `docs/index.html` 也能看，但主视觉里的境读不到“已就绪”的信号，会多等几秒。
 
+## 发布
+
+公开仓库是 [github.com/neohoy/neo-isle](https://github.com/neohoy/neo-isle)，示例页由它 `main` 分支的 `docs/` 目录提供（GitHub Pages）。
+
+技能的正本在作者自己的技能库里，公开仓库是它的同步副本。发布一次的步骤：
+
+1. 在正本里改好，需要的话跑 `python3 gallery/build.py`（加了境或改了引擎就带 `--shots`）。
+2. 把正本目录同步到公开仓库的本地克隆（不带 `.DS_Store`、`__pycache__`、`.impeccable/hook.cache.json`）。
+3. 在克隆里提交、推送。推送后示例页一两分钟内自动更新。
+
 ## 改引擎
 
 改 `core/` 之后：把 `core/VERSION` 加一；把两个示范境在三种容器、三种背景下各出图确认没坏；再提交。已经发布的各境是自带引擎的单文件，不受影响；想让旧境用上新引擎，重新 `--release` 一版。
